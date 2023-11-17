@@ -1,125 +1,119 @@
 <?php
 
-class PlayfairCipher
+function findCharIndex($char, $matrix)
 {
-    private $keyMatrix = array();
-    private $key = '';
+    $index = array();
 
-    public function setKey($key)
-    {
-        $this->key = strtoupper($key);
-        $this->generateKeyMatrix();
-    }
-
-    private function generateKeyMatrix()
-    {
-        $key = $this->removeDuplicateChars($this->key . 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        $keyLength = strlen($key);
-
-        $this->keyMatrix = array();
-        $index = 0;
-
-        for ($i = 0; $i < 5; $i++) {
-            for ($j = 0; $j < 5; $j++) {
-                $this->keyMatrix[$i][$j] = $key[$index++];
+    foreach ($matrix as $rowKey => $row) {
+        foreach ($row as $colKey => $col) {
+            if ($char == $col) {
+                $index['row'] = $rowKey;
+                $index['col'] = $colKey;
+                return $index;
             }
         }
     }
 
-    private function removeDuplicateChars($str)
-    {
-        $result = '';
-        for ($i = 0; $i < strlen($str); $i++) {
-            if (strpos($result, $str[$i]) === false) {
-                $result .= $str[$i];
-            }
-        }
-        return $result;
-    }
-
-    public function encrypt($plaintext)
-    {
-        $plaintext = strtoupper($this->prepareText($plaintext));
-        $ciphertext = '';
-
-        for ($i = 0; $i < strlen($plaintext); $i += 2) {
-            $char1 = $plaintext[$i];
-            $char2 = $plaintext[$i + 1];
-            list($row1, $col1) = $this->getCharPosition($char1);
-            list($row2, $col2) = $this->getCharPosition($char2);
-
-            if ($row1 == $row2) {
-                $ciphertext .= $this->keyMatrix[$row1][($col1 + 1) % 5];
-                $ciphertext .= $this->keyMatrix[$row2][($col2 + 1) % 5];
-            } elseif ($col1 == $col2) {
-                $ciphertext .= $this->keyMatrix[($row1 + 1) % 5][$col1];
-                $ciphertext .= $this->keyMatrix[($row2 + 1) % 5][$col2];
-            } else {
-                $ciphertext .= $this->keyMatrix[$row1][$col2];
-                $ciphertext .= $this->keyMatrix[$row2][$col1];
-            }
-        }
-
-        return $ciphertext;
-    }
-
-    public function decrypt($ciphertext)
-    {
-        $ciphertext = strtoupper($this->prepareText($ciphertext));
-        $plaintext = '';
-
-        for ($i = 0; $i < strlen($ciphertext); $i += 2) {
-            $char1 = $ciphertext[$i];
-            $char2 = $ciphertext[$i + 1];
-            list($row1, $col1) = $this->getCharPosition($char1);
-            list($row2, $col2) = $this->getCharPosition($char2);
-
-            if ($row1 == $row2) {
-                $plaintext .= $this->keyMatrix[$row1][($col1 - 1 + 5) % 5];
-                $plaintext .= $this->keyMatrix[$row2][($col2 - 1 + 5) % 5];
-            } elseif ($col1 == $col2) {
-                $plaintext .= $this->keyMatrix[($row1 - 1 + 5) % 5][$col1];
-                $plaintext .= $this->keyMatrix[($row2 - 1 + 5) % 5][$col2];
-            } else {
-                $plaintext .= $this->keyMatrix[$row1][$col2];
-                $plaintext .= $this->keyMatrix[$row2][$col1];
-            }
-        }
-
-        return $plaintext;
-    }
-
-    private function prepareText($text)
-    {
-        $text = strtoupper(preg_replace("/[^A-Z]/", '', $text));
-        $text = str_replace('J', 'I', $text);
-        return $text;
-    }
-
-    private function getCharPosition($char)
-    {
-        for ($i = 0; $i < 5; $i++) {
-            for ($j = 0; $j < 5; $j++) {
-                if ($this->keyMatrix[$i][$j] == $char) {
-                    return array($i, $j);
-                }
-            }
-        }
-        return array();
-    }
+    return $index;
 }
 
-// Contoh penggunaan
-//$playfairCipher = new PlayfairCipher();
-//$key = 'KEYWORD';
-//$playfairCipher->setKey($key);
+function generatePlayfairMatrix($key)
+{
+    $key = strtoupper($key);
+    $key = str_replace('J', 'I', $key);
 
-//$plaintext = 'HELLO';
-//echo "Plaintext: $plaintext\n";
+    $keyArray = str_split($key);
+    $alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+    $matrix = array();
 
-//$ciphertext = $playfairCipher->encrypt($plaintext);
-//echo "Encrypted: $ciphertext\n";
+    $keyIndex = 0;
 
-//$decryptedText = $playfairCipher->decrypt($ciphertext);
-//echo "Decrypted: $decryptedText\n";
+    for ($i = 0; $i < 5; $i++) {
+        for ($j = 0; $j < 5; $j++) {
+            if (isset($keyArray[$keyIndex])) {
+                $matrix[$i][$j] = $keyArray[$keyIndex];
+                $keyIndex++;
+            } else {
+                while (in_array($alphabet[0], $matrix) || in_array($alphabet[0], $keyArray)) {
+                    $alphabet = substr($alphabet, 1);
+                }
+                $matrix[$i][$j] = $alphabet[0];
+                $alphabet = substr($alphabet, 1);
+            }
+        }
+    }
+
+    return $matrix;
+}
+
+function playfairEncrypt($plaintext, $key)
+{
+    $matrix = generatePlayfairMatrix($key);
+    $plaintext = str_replace('J', 'I', strtoupper($plaintext));
+    $plaintext = str_split(preg_replace("/[^A-Z]/", "", $plaintext));
+
+    $ciphertext = '';
+
+    for ($i = 0; $i < count($plaintext); $i += 2) {
+        $char1 = $plaintext[$i];
+        $char2 = isset($plaintext[$i + 1]) ? $plaintext[$i + 1] : 'X';
+
+        $index1 = findCharIndex($char1, $matrix);
+        $index2 = findCharIndex($char2, $matrix);
+
+        if ($index1['row'] == $index2['row']) {
+            $ciphertext .= $matrix[$index1['row']][($index1['col'] + 1) % 5];
+            $ciphertext .= $matrix[$index2['row']][($index2['col'] + 1) % 5];
+        } elseif ($index1['col'] == $index2['col']) {
+            $ciphertext .= $matrix[($index1['row'] + 1) % 5][$index1['col']];
+            $ciphertext .= $matrix[($index2['row'] + 1) % 5][$index2['col']];
+        } else {
+            $ciphertext .= $matrix[$index1['row']][$index2['col']];
+            $ciphertext .= $matrix[$index2['row']][$index1['col']];
+        }
+    }
+
+    return $ciphertext;
+}
+
+function playfairDecrypt($ciphertext, $key)
+{
+    $matrix = generatePlayfairMatrix($key);
+    $ciphertext = str_replace('J', 'I', strtoupper($ciphertext));
+    $ciphertext = str_split(preg_replace("/[^A-Z]/", "", $ciphertext));
+
+    $plaintext = '';
+
+    for ($i = 0; $i < count($ciphertext); $i += 2) {
+        $char1 = $ciphertext[$i];
+        $char2 = isset($ciphertext[$i + 1]) ? $ciphertext[$i + 1] : 'X';
+
+        $index1 = findCharIndex($char1, $matrix);
+        $index2 = findCharIndex($char2, $matrix);
+
+        if ($index1['row'] == $index2['row']) {
+            $plaintext .= $matrix[$index1['row']][($index1['col'] - 1 + 5) % 5];
+            $plaintext .= $matrix[$index2['row']][($index2['col'] - 1 + 5) % 5];
+        } elseif ($index1['col'] == $index2['col']) {
+            $plaintext .= $matrix[($index1['row'] - 1 + 5) % 5][$index1['col']];
+            $plaintext .= $matrix[($index2['row'] - 1 + 5) % 5][$index2['col']];
+        } else {
+            $plaintext .= $matrix[$index1['row']][$index2['col']];
+            $plaintext .= $matrix[$index2['row']][$index1['col']];
+        }
+    }
+
+    return $plaintext;
+}
+
+// Contoh penggunaan:
+$key = "KEYWORD";
+$plaintext = "HELLO";
+
+$encryptedText = playfairEncrypt($plaintext, $key);
+echo "Encrypted Text: $encryptedText\n";
+
+$decryptedText = playfairDecrypt($encryptedText, $key);
+echo "Decrypted Text: $decryptedText\n";
+
 ?>

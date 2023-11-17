@@ -35,9 +35,9 @@
             echo "<h2>Hasil Pencarian untuk '$id_anggota':</h2>";
             echo "<ul>";
             while ($row = $result->fetch_assoc()) {
-                echo "<li>" . $row['username'] . "</li>";
-                echo "<li>" . $row['alamat'] . "</li>";
-                echo "<li>" . $row['email'] . "</li>";
+                echo playfairDecrypt("<li>" . $row['username'] . "</li>",$key);
+                echo playfairDecrypt("<li>" . $row['alamat'] . "</li>",$key);
+                echo playfairDecrypt("<li>" . $row['email'] . "</li>",$key);
                 echo "<li>" . $row['no_hp'] . "</li>";
                 // Tambahkan kolom-kolom lain sesuai kebutuhan
             }
