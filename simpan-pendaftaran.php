@@ -1,6 +1,8 @@
 <?php
 // Include file koneksi ke database
 include "koneksi.php";
+require ("playfaircipher.php");
+$key = "key";
 
 // Menerima nilai dari kiriman form pendaftaran
 $username = $_POST["username"];
