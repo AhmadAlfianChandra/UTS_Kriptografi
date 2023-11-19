@@ -56,7 +56,7 @@ function playfairEncrypt($plaintext, $key)
 
     for ($i = 0; $i < count($plaintext); $i += 2) {
         $char1 = $plaintext[$i];
-        $char2 = isset($plaintext[$i + 1]) ? $plaintext[$i + 1] : 'X';
+        $char2 = isset($plaintext[$i + 1]) ? $plaintext[$i + 1] : '';
 
         $index1 = findCharIndex($char1, $matrix);
         $index2 = findCharIndex($char2, $matrix);
@@ -86,7 +86,7 @@ function playfairDecrypt($ciphertext, $key)
 
     for ($i = 0; $i < count($ciphertext); $i += 2) {
         $char1 = $ciphertext[$i];
-        $char2 = isset($ciphertext[$i + 1]) ? $ciphertext[$i + 1] : 'X';
+        $char2 = isset($ciphertext[$i + 1]) ? $ciphertext[$i + 1] : '';
 
         $index1 = findCharIndex($char1, $matrix);
         $index2 = findCharIndex($char2, $matrix);
@@ -107,13 +107,13 @@ function playfairDecrypt($ciphertext, $key)
 }
 
 // Contoh penggunaan:
-$key = "KEYWORD";
-$plaintext = "HELLO";
+///$key = "KEYWORD";
+//$plaintext = "HELLO";
 
-$encryptedText = playfairEncrypt($plaintext, $key);
-echo "Encrypted Text: $encryptedText\n";
+//$encryptedText = playfairEncrypt($plaintext, $key);
+//echo "Encrypted Text: $encryptedText\n";
 
-$decryptedText = playfairDecrypt($encryptedText, $key);
-echo "Decrypted Text: $decryptedText\n";
+//$decryptedText = playfairDecrypt($encryptedText, $key);
+//echo "Decrypted Text: $decryptedText\n";
 
 ?>
