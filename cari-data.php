@@ -17,7 +17,8 @@
     <?php
     // Gabungkan dengan file koneksi.php
     include 'koneksi.php';
-
+    require ("playfaircipher.php");
+    $key = "key";
     // Proses pencarian ketika formulir dikirim
     if(isset($_GET['search'])) {
         // Ambil data dari formulir pencarian
@@ -35,9 +36,9 @@
             echo "<h2>Hasil Pencarian untuk '$id_anggota':</h2>";
             echo "<ul>";
             while ($row = $result->fetch_assoc()) {
-                echo playfairDecrypt("<li>" . $row['username'] . "</li>",$key);
-                echo playfairDecrypt("<li>" . $row['alamat'] . "</li>",$key);
-                echo playfairDecrypt("<li>" . $row['email'] . "</li>",$key);
+                echo "<li>" . playfairDecrypt($row['username'],$key). "</li>";
+                echo "<li>" . playfairDecrypt($row['alamat'],$key) . "</li>";
+                echo "<li>" . playfairDecrypt($row['email'],$key) . "</li>";
                 echo "<li>" . $row['no_hp'] . "</li>";
                 // Tambahkan kolom-kolom lain sesuai kebutuhan
             }
