@@ -5,10 +5,10 @@ require "playfaircipher.php";
 $key = "key";
 
 // Menerima nilai dari kiriman form pendaftaran
-$username = playfairEncrypt($_POST["username"],$key);
-$nama = playfairEncrypt($_POST["nama"],$key);
-$alamat = playfairEncrypt($_POST["alamat"],$key);
-$email = playfairEncrypt($_POST["email"],$key);
+$username = encrypt($_POST["username"],$key);
+$nama = encrypt($_POST["nama"],$key);
+$alamat = encrypt($_POST["alamat"],$key);
+$email = encrypt($_POST["email"],$key);
 $no_hp = $_POST["no_hp"];
 
 // Query input menginput data ke dalam tabel anggota

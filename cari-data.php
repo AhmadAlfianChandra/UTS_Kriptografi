@@ -44,12 +44,12 @@
 
             // Tampilkan hasil pencarian
             if ($result->num_rows > 0) {
-                echo "<h2 class='mb-3'>Hasil Pencarian untuk '$id_anggota':</h2>";
+                echo "<h2 class='mb-3'>Hasil Pencarian untuk $id_anggota :</h2>";
                 echo "<ul class='list-group'>";
                 while ($row = $result->fetch_assoc()) {
-                    echo "<li class='list-group-item'>" . playfairDecrypt($row['username'],$key). "</li>";
-                    echo "<li class='list-group-item'>" . playfairDecrypt($row['alamat'],$key) . "</li>";
-                    echo "<li class='list-group-item'>" . playfairDecrypt($row['email'],$key) . "</li>";
+                    echo "<li class='list-group-item'>" . decrypt($row['username'],$key). "</li>";
+                    echo "<li class='list-group-item'>" . decrypt($row['alamat'],$key) . "</li>";
+                    echo "<li class='list-group-item'>" . decrypt($row['email'],$key) . "</li>";
                     echo "<li class='list-group-item'>" . $row['no_hp'] . "</li>";
                     // Tambahkan kolom-kolom lain sesuai kebutuhan
                 }
